@@ -3,7 +3,7 @@ app.py — Paper Sieve Web App
 
 Clean web interface: users enter Topic/Domain and Methods/Tools keywords,
 pick a time range, and download a combined deduplicated CSV of papers
-from arXiv and OpenAlex.
+from arXiv, OpenAlex, Scopus, and Web of Science.
 """
 
 from flask import Flask, request, render_template_string, send_file, jsonify
@@ -20,6 +20,10 @@ from search_wos import search_wos
 
 app = Flask(__name__)
 jobs = {}
+
+# need to delete after project marking
+SCOPUS_API_KEY = "a6a4b4a8f0ff49676823b4b795cff8aa"
+WOS_API_KEY = "296c7877068fd5bba5e70c4dd8540bfbbcf37346"
 
 
 # ── Deduplication ──
@@ -50,65 +54,69 @@ def deduplicate(papers):
 def run_search(job_id, keywords, date_from, date_to):
     job = jobs[job_id]
     all_results = []
+    counts = {}
 
     try:
-        # arXiv
-        job["progress"] = "Searching arXiv..."
+        # 1. arXiv
+        job["progress"] = "Searching arXiv (1/4)..."
         try:
             results = search_arxiv(keywords=keywords, time_lower_bound=date_from, time_upper_bound=date_to)
             for r in results:
                 r["source"] = "arXiv"
             all_results.extend(results)
-            job["progress"] = f"arXiv: {len(results)} papers"
+            counts["arXiv"] = len(results)
         except Exception as e:
-            job["progress"] = f"arXiv error: {e}"
+            counts["arXiv"] = 0
+            print(f"arXiv error: {e}")
 
-        # OpenAlex
-        job["progress"] = "Searching OpenAlex..."
+        job["progress"] = f"arXiv: {counts.get('arXiv', 0)} · Searching OpenAlex (2/4)..."
+
+        # 2. OpenAlex
         try:
             results = search_openalex(keywords=keywords, time_lower_bound=date_from, time_upper_bound=date_to)
             for r in results:
                 r["source"] = "OpenAlex"
             all_results.extend(results)
-            job["progress"] = f"OpenAlex: {len(results)} papers"
+            counts["OpenAlex"] = len(results)
         except Exception as e:
-            job["progress"] = f"OpenAlex error: {e}"
+            counts["OpenAlex"] = 0
+            print(f"OpenAlex error: {e}")
 
-        # need to delete after project marking
-        SCOPUS_API_KEY = "a6a4b4a8f0ff49676823b4b795cff8aa"
-        WOS_API_KEY = "296c7877068fd5bba5e70c4dd8540bfbbcf37346"
+        job["progress"] = f"arXiv: {counts.get('arXiv', 0)} · OpenAlex: {counts.get('OpenAlex', 0)} · Searching Scopus (3/4)..."
 
-        # Scopus
-        job["progress"] = "Searching Scopus..."
+        # 3. Scopus
         try:
             results = search_scopus(
-                    keywords=keywords,
-                    api_key=SCOPUS_API_KEY,
-                    time_lower_bound=date_from,
-                    time_upper_bound=date_to,
-                )
+                keywords=keywords,
+                api_key=SCOPUS_API_KEY,
+                time_lower_bound=date_from,
+                time_upper_bound=date_to,
+            )
             for r in results:
-                    r["source"] = "Scopus"
+                r["source"] = "Scopus"
             all_results.extend(results)
-            job["progress"] = f"Scopus: {len(results)} papers"
+            counts["Scopus"] = len(results)
         except Exception as e:
-            job["progress"] = f"Scopus error: {e}"
+            counts["Scopus"] = 0
+            print(f"Scopus error: {e}")
 
-        # Web of Science
-        job["progress"] = "Searching Web of Science..."
+        job["progress"] = f"arXiv: {counts.get('arXiv', 0)} · OpenAlex: {counts.get('OpenAlex', 0)} · Scopus: {counts.get('Scopus', 0)} · Searching WoS (4/4)..."
+
+        # 4. Web of Science
         try:
             results = search_wos(
-                    keywords=keywords,
-                    api_key=WOS_API_KEY,
-                    time_lower_bound=date_from,
-                    time_upper_bound=date_to,
-                )
+                keywords=keywords,
+                api_key=WOS_API_KEY,
+                time_lower_bound=date_from,
+                time_upper_bound=date_to,
+            )
             for r in results:
-                    r["source"] = "Web of Science"
+                r["source"] = "Web of Science"
             all_results.extend(results)
-            job["progress"] = f"Web of Science: {len(results)} papers"
+            counts["Web of Science"] = len(results)
         except Exception as e:
-            job["progress"] = f"Web of Science error: {e}"
+            counts["Web of Science"] = 0
+            print(f"WoS error: {e}")
 
         # Deduplicate & save
         job["progress"] = "Deduplicating..."
@@ -125,17 +133,16 @@ def run_search(job_id, keywords, date_from, date_to):
                 writer.writeheader()
                 writer.writerows(unique)
 
+        parts = [f"{src}: {cnt}" for src, cnt in counts.items() if cnt > 0]
+        summary = " · ".join(parts)
+        dupes = len(all_results) - len(unique)
+
         job["status"] = "done"
-        job["progress"] = f"Done — {len(unique)} unique papers"
+        job["progress"] = f"Done — {len(unique)} unique papers ({summary}, {dupes} duplicates removed)"
         job["csv_path"] = csv_path
         job["count"] = len(unique)
         job["raw_count"] = len(all_results)
-
-        src_counts = {}
-        for p in unique:
-            s = p.get("source", "unknown")
-            src_counts[s] = src_counts.get(s, 0) + 1
-        job["source_counts"] = src_counts
+        job["source_counts"] = counts
 
     except Exception as e:
         job["status"] = "error"
@@ -162,7 +169,6 @@ body {
   min-height: 100vh;
 }
 
-/* ── Hero ── */
 .hero {
   padding: 80px 24px 60px;
   text-align: center;
@@ -181,7 +187,6 @@ body {
   font-weight: 400;
 }
 
-/* ── Search box ── */
 .search-wrap {
   max-width: 620px;
   margin: -20px auto 0;
@@ -229,10 +234,7 @@ body {
 }
 .field-input::placeholder { color: #D6D3D1; }
 
-.date-row {
-  display: flex;
-  gap: 12px;
-}
+.date-row { display: flex; gap: 12px; }
 .date-row .date-field { flex: 1; }
 .date-row .date-field label {
   font-size: 11px;
@@ -282,7 +284,6 @@ body {
 .submit-btn:disabled { background: #A8A29E; cursor: not-allowed; }
 .submit-btn .arrow { font-size: 18px; opacity: 0.7; }
 
-/* ── Progress ── */
 .progress-area {
   margin-top: 16px;
   display: none;
@@ -307,7 +308,6 @@ body {
   text-align: center;
 }
 
-/* ── Result ── */
 .result-area {
   margin-top: 20px;
   display: none;
@@ -355,7 +355,6 @@ body {
 .dl-btn:hover { background: #292524; }
 .dl-btn svg { width: 18px; height: 18px; }
 
-/* ── Footer ── */
 .footer {
   text-align: center;
   padding: 40px 24px;
@@ -367,7 +366,7 @@ body {
 <body>
 
 <div class="hero">
-  <h1>Paper Sieve</h1>
+  <h1>Paper Sieve - 1:30 version</h1>
   <p>Search academic papers across databases and download results as CSV</p>
 </div>
 
@@ -393,11 +392,11 @@ body {
       <div class="date-row">
         <div class="date-field">
           <label>From</label>
-          <input type="date" class="date-input" id="dateFrom" value="2023-01-01">
+          <input type="date" class="date-input" id="dateFrom" value="2026-01-01">
         </div>
         <div class="date-field">
           <label>To</label>
-          <input type="date" class="date-input" id="dateTo" value="2025-07-01">
+          <input type="date" class="date-input" id="dateTo" value="2026-05-01">
         </div>
       </div>
     </div>
@@ -428,7 +427,7 @@ body {
   </form>
 </div>
 
-<div class="footer">Paper Sieve — arXiv · OpenAlex</div>
+<div class="footer">Paper Sieve — arXiv · OpenAlex · Scopus · Web of Science</div>
 
 <script>
 let pollInterval = null;
@@ -441,7 +440,6 @@ async function startSearch(e) {
 
   if (!topic && !method) { alert('Enter at least one keyword'); return; }
 
-  // Build keyword groups — only include non-empty ones
   const keywords = [];
   if (topic) keywords.push(topic.split(',').map(k => k.trim()).filter(k => k));
   if (method) keywords.push(method.split(',').map(k => k.trim()).filter(k => k));
@@ -452,13 +450,13 @@ async function startSearch(e) {
     date_to: document.getElementById('dateTo').value,
   };
 
-  // UI
   const btn = document.getElementById('searchBtn');
   btn.disabled = true;
   btn.innerHTML = 'Searching... <span class="arrow">↗</span>';
   document.getElementById('progressArea').style.display = 'block';
   document.getElementById('resultArea').style.display = 'none';
   document.getElementById('progressFill').style.width = '0%';
+  document.getElementById('progressFill').style.background = '#1C1917';
   document.getElementById('progressStatus').textContent = 'Starting search...';
 
   const res = await fetch('/api/search', {
@@ -474,7 +472,7 @@ async function startSearch(e) {
     const data = await r.json();
 
     step++;
-    const pct = Math.min(step * 15, 90);
+    const pct = Math.min(step * 8, 90);
     document.getElementById('progressFill').style.width = pct + '%';
     document.getElementById('progressStatus').textContent = data.progress;
 
@@ -486,13 +484,12 @@ async function startSearch(e) {
       btn.disabled = false;
       btn.innerHTML = 'Search papers <span class="arrow">↗</span>';
 
-      // Show result
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('resultCount').textContent = data.count;
 
       let breakdown = '';
       for (const [src, cnt] of Object.entries(data.source_counts || {})) {
-        breakdown += src + ': ' + cnt + '   ';
+        if (cnt > 0) breakdown += src + ': ' + cnt + '   ';
       }
       if (data.raw_count > data.count) {
         breakdown += '(' + (data.raw_count - data.count) + ' duplicates removed)';

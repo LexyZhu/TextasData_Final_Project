@@ -19,11 +19,10 @@ from datetime import datetime
 KEYWORDS = [
     ["agent", "chatbot"],                           # Group 1 (OR-joined)
     ["ai", "llm", "large language model"],          # Group 2 (OR-joined)
-    ["mental health", "psychiatry", "psychology"],   # Group 3 (OR-joined)
 ]
 
-TIME_LOWER_BOUND = "2023-01-01"
-TIME_UPPER_BOUND = "2025-07-01"
+TIME_LOWER_BOUND = "2026-01-01"
+TIME_UPPER_BOUND = "2026-04-01"
 
 # API keys — replace with your own
 SCOPUS_API_KEY = "a6a4b4a8f0ff49676823b4b795cff8aa"
