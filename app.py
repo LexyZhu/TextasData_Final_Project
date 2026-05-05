@@ -618,7 +618,7 @@ body::after {
       <div class="date-row">
         <div class="date-field">
           <label>From</label>
-          <input type="date" class="date-input" id="dateFrom" value="2026-01-01">
+          <input type="date" class="date-input" id="dateFrom" value="2026-03-01">
         </div>
         <div class="date-field">
           <label>To</label>
