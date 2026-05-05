@@ -226,7 +226,7 @@ body {
 }
 
 .process {
-  max-width: 780px;
+  max-width: 850px;
   margin: 8px auto 46px;
   padding: 0 24px;
   text-align: center;
@@ -286,7 +286,7 @@ body {
 }
 
 .process-step h3 {
-  font-size: 22px;
+  font-size: 20px;
   color: #1c1917;
   margin-bottom: 14px;
 }
