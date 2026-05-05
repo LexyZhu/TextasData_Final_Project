@@ -250,7 +250,7 @@ body {
 }
 
 .process {
-  max-width: 1180px;
+  max-width: 760px;
   margin: 8px auto 46px;
   padding: 0 24px;
   text-align: center;
@@ -287,7 +287,7 @@ body {
 }
 
 .process-icon {
-  font-size: 34px;
+  font-size: 30px;
   color: #756d66;
   height: 42px;
   margin-bottom: 18px;
