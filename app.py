@@ -226,7 +226,7 @@ body {
 }
 
 .process {
-  max-width: 850px;
+  max-width: 950px;
   margin: 8px auto 46px;
   padding: 0 24px;
   text-align: center;
