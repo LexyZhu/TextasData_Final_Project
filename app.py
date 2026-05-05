@@ -336,22 +336,29 @@ body {
 <body>
 
 <div class="hero">
-  <h1>Paper Sieve - 6:30 version</h1>
-  <p>Search academic papers across databases and download results as CSV</p>
+  <h1>Paper Sieve</h1>
+  <p><strong>Author:</strong> Lexy Zhu</p>
 </div>
+
+<section class="description">
+  <h2>Description</h2>
+  <p>
+    Paper Sieve is a literature search tool designed to help users efficiently collect and deduplicate papers from arXiv, OpenAlex, Scopus, and Web of Science based on two sets of user-defined keywords and a specified publication time range.
+  </p>
+</section>
 
 <div class="search-wrap">
   <div class="search-box">
 
     <div class="field-group">
-      <label class="field-label">Keywords 1</label>
-      <span class="field-hint">Separate keywords with commas — these are OR-joined</span>
+      <label class="field-label">Keywords Group 1</label>
+      <span class="field-hint">Separate keywords with commas (these are OR-joined)</span>
       <input class="field-input" id="topicInput" placeholder="e.g. wage inequality, economics" value="wage inequality, economics">
     </div>
 
     <div class="field-group">
-      <label class="field-label">Methods / Tools</label>
-      <span class="field-hint">Separate keywords with commas — these are OR-joined</span>
+      <label class="field-label">Keywords Group 2</label>
+      <span class="field-hint">Separate keywords with commas (these are OR-joined)</span>
       <input class="field-input" id="methodInput" placeholder="e.g. AI, large language model" value="AI, large language model">
     </div>
 
