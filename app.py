@@ -205,6 +205,17 @@ body {
     radial-gradient(circle at 88% 12%, rgba(255, 178, 107, 0.28), transparent 28%),
     radial-gradient(circle at 50% 95%, rgba(112, 201, 186, 0.18), transparent 36%),
     linear-gradient(135deg, #faf7f2 0%, #f6f1ea 45%, #eef3f6 100%);
+  background-size: 160% 160%;
+  animation: softMove 12s ease-in-out infinite alternate;
+}
+
+@keyframes softMove {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
 }
 
 .hero {
@@ -393,7 +404,7 @@ body {
 }
 
 .date-row .date-field label {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: #756d66;
   margin-bottom: 7px;
