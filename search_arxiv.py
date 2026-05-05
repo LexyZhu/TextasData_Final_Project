@@ -74,15 +74,18 @@ def search_arxiv(
 
         feed = feedparser.parse(url)
         entries = feed.entries
-        print(f"  Fetched {len(entries)} entries")
+        print(f"Fetched {len(entries)} entries")
 
         if not entries:
-            print("  No more results.")
+            print("No more results.")
             break
 
         for entry in entries:
+            # print(entry)
             try:
-                published_date = entry.published[:10]
+                published_date = entry.get("published", "")
+                published_date = published_date[:10]
+                print(published_date)
                 if time_lower_bound <= published_date <= time_upper_bound:
                     all_results.append({
                         "title": entry.title,
@@ -103,32 +106,32 @@ def search_arxiv(
 
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     # --- Edit your keyword groups here ---
-#     keywords = [
-#         ["agent", "chatbot"],                           # Group 1 (OR-joined)
-#         ["ai", "llm", "large language model"],          # Group 2 (OR-joined)
-#         ["mental health", "psychiatry", "psychology"],   # Group 3 (OR-joined)
-#     ]
-#     # Groups are AND-joined:
-#     # (agent OR chatbot) AND (ai OR llm OR "large language model") AND ("mental health" OR ...)
+    # --- Edit your keyword groups here ---
+    keywords = [
+        ["ai","large language model"],          # Group 2 (OR-joined)
+        ["mental health", "psychiatry", "psychology"],   # Group 3 (OR-joined)
+    ]
+    # Groups are AND-joined:
+    # (agent OR chatbot) AND (ai OR llm OR "large language model") AND ("mental health" OR ...)
+    # print(build_query(keywords))
 
-#     results = search_arxiv(
-#         keywords=keywords,
-#         time_lower_bound="2023-01-01",
-#         time_upper_bound="2025-07-01",
-#     )
+    results = search_arxiv(
+        keywords=keywords,
+        time_lower_bound="2023-01-01",
+        time_upper_bound="2025-07-01",
+    )
 
-#     # Save JSON
-#     with open("result_arXiv.json", "w", encoding="utf-8") as f:
-#         json.dump(results, f, ensure_ascii=False, indent=2)
+    # Save JSON
+    with open("result_arXiv.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
 
-#     # Save CSV
-#     if results:
-#         with open("result_arXiv.csv", "w", encoding="utf-8", newline="") as f:
-#             writer = csv.DictWriter(f, fieldnames=results[0].keys())
-#             writer.writeheader()
-#             writer.writerows(results)
+    # Save CSV
+    if results:
+        with open("result_arXiv.csv", "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=results[0].keys())
+            writer.writeheader()
+            writer.writerows(results)
 
-#     print(f"Saved {len(results)} papers to result_arXiv.json and result_arXiv.csv")
+    print(f"Saved {len(results)} papers to result_arXiv.json and result_arXiv.csv")

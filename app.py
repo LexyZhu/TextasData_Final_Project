@@ -67,7 +67,9 @@ def run_search(job_id, keywords, date_from, date_to):
             return
         job["sources"]["arXiv"]["status"] = "running"
         try:
-            results = search_arxiv(keywords=keywords, time_lower_bound=date_from, time_upper_bound=date_to)
+            results = search_arxiv(keywords=keywords, 
+                                   time_lower_bound=date_from, 
+                                   time_upper_bound=date_to)
             for r in results:
                 r["source"] = "arXiv"
             all_results.extend(results)
@@ -342,7 +344,7 @@ body {
   <div class="search-box">
 
     <div class="field-group">
-      <label class="field-label">Topic / Domain</label>
+      <label class="field-label">Keywords 1</label>
       <span class="field-hint">Separate keywords with commas — these are OR-joined</span>
       <input class="field-input" id="topicInput" placeholder="e.g. wage inequality, economics" value="wage inequality, economics">
     </div>
