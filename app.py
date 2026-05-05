@@ -250,14 +250,14 @@ body {
 }
 
 .process {
-  max-width: 760px;
+  max-width: 780px;
   margin: 8px auto 46px;
   padding: 0 24px;
   text-align: center;
 }
 
 .process-kicker {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -266,7 +266,7 @@ body {
 }
 
 .process h2 {
-  font-size: 42px;
+  font-size: 40px;
   line-height: 1.1;
   font-weight: 850;
   letter-spacing: -1.4px;
@@ -570,14 +570,14 @@ body {
 
 <section class="process">
   <div class="process-kicker">The Process</div>
-  <h2>Search papers in minutes, not hours</h2>
+  <h2>Curate relevant papers in minutes, not hours</h2>
 
   <div class="process-steps">
     <div class="process-step">
       <div class="process-icon">⌕</div>
       <div class="process-number">1</div>
       <h3>Enter Keywords</h3>
-      <p>Provide two keyword groups. Terms within each group are OR-joined to broaden the search.</p>
+      <p>Provide two keyword groups. Each group is OR-joined.</p>
     </div>
 
     <div class="process-step">
