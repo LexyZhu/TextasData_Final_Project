@@ -200,22 +200,46 @@ body {
   font-family: "Times New Roman", Times, serif;
   color: #1f1f1f;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 12% 18%, rgba(120, 119, 198, 0.22), transparent 30%),
-    radial-gradient(circle at 88% 12%, rgba(255, 178, 107, 0.28), transparent 28%),
-    radial-gradient(circle at 50% 95%, rgba(112, 201, 186, 0.18), transparent 36%),
-    linear-gradient(135deg, #faf7f2 0%, #f6f1ea 45%, #eef3f6 100%);
-  background-size: 160% 160%;
-  animation: softMove 12s ease-in-out infinite alternate;
+  background: linear-gradient(135deg, #faf7f2 0%, #f6f1ea 45%, #eef3f6 100%);
+  position: relative;
+  overflow-x: hidden;
 }
 
-@keyframes softMove {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 100% 100%;
-  }
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: -1;
+}
+
+body::before {
+  top: 8%;
+  left: 8%;
+  background: rgba(120, 119, 198, 0.45);
+  animation: floatBlob1 16s ease-in-out infinite alternate;
+}
+
+body::after {
+  right: 8%;
+  top: 12%;
+  background: rgba(255, 178, 107, 0.45);
+  animation: floatBlob2 18s ease-in-out infinite alternate;
+}
+
+@keyframes floatBlob1 {
+  from { transform: translate(0, 0); }
+  to { transform: translate(80px, 60px); }
+}
+
+@keyframes floatBlob2 {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-70px, 80px); }
 }
 
 .hero {
