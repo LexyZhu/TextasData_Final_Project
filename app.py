@@ -602,7 +602,7 @@ body::after {
     <div class="field-group">
       <label class="field-label">Keywords Group 1</label>
       <span class="field-hint">Separate keywords with commas (these are OR-joined)</span>
-      <input class="field-input" id="topicInput" placeholder="e.g. wage inequality, economics" value="wage inequality, economics">
+      <input class="field-input" id="topicInput" placeholder="e.g. wage inequality" value="wage inequality">
     </div>
 
     <div class="field-group">
