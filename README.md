@@ -13,3 +13,8 @@ https://textasdata-final-project.onrender.com/
 - Automatically deduplicate retrieved papers
 - Track search progress in real time
 - Export results as a CSV file
+
+## Acknowledgements
+
+Thank TraceLaw for the flowchart design inspiration: https://trace.law/
+
